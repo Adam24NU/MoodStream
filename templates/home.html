@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>Mood-Based Playlist Generator</h1>
+        <p>Find music that matches how you feel.</p>
+    </div>
+</section>
+
+<!-- Mood Picker -->
+<section class="mood-section">
+    <h2>Select Your Mood</h2>
+
+    <div class="mood-grid">
+        <a href="{{ url_for('playlist.generate', mood='happy') }}" class="mood-wrapper">
+            <div class="mood-btn mood-happy">
+                <i class="bi bi-sun-fill"></i>
+            </div>
+            <p>Happy</p>
+        </a>
+        <a href="{{ url_for('playlist.generate', mood='sad') }}" class="mood-wrapper">
+            <div class="mood-btn mood-sad">
+                <i class="bi bi-cloud-rain-fill"></i>
+            </div>
+            <p>Sad</p>
+        </a>
+        <a href="{{ url_for('playlist.generate', mood='energetic') }}" class="mood-wrapper">
+            <div class="mood-btn mood-energetic">
+                <i class="bi bi-lightning-charge-fill"></i>
+            </div>
+            <p>Energetic</p>
+        </a>
+        <a href="{{ url_for('playlist.generate', mood='calm') }}" class="mood-wrapper">
+            <div class="mood-btn mood-calm">
+                <i class="bi bi-moon-stars-fill"></i>
+            </div>
+            <p>Calm</p>
+        </a>
+    </div>
+</section>
+{% endblock %}

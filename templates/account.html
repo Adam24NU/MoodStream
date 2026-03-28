@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="account-container">
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        <span class="flash-text">{{ message }}</span>
+                        <button class="flash-close" onclick="closeFlash(this)">✕</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Update Email -->
+    <form action="{{ url_for('auth.update_email') }}" method="POST" class="account-form">
+        <h3>Update Email</h3>
+        <input type="email" name="email" value="{{ current_user.email }}" required>
+        <button type="submit">Update Email</button>
+    </form>
+
+    <!-- Change Password -->
+    <form action="{{ url_for('auth.change_password') }}" method="POST" class="account-form">
+        <h3>Change Password</h3>
+        <div class="password-wrapper">
+            <input type="password" id="old_password" name="old_password" placeholder="Current Password" required>
+            <span class="toggle-password" data-target="old_password"><i class="bi bi-eye"></i></span>
+        </div>
+        <div class="password-wrapper">
+            <input type="password" id="password" name="password" placeholder="New Password" required>
+            <span class="toggle-password" data-target="password"><i class="bi bi-eye"></i></span>
+        </div>
+        <div class="password-wrapper">
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+            <span class="toggle-password" data-target="confirm_password"><i class="bi bi-eye"></i></span>
+        </div>
+        <div class="password-hints">
+            <p id="len" class="hint">• At least 8 characters</p>
+            <p id="upper" class="hint">• Contains an uppercase letter</p>
+            <p id="lower" class="hint">• Contains a lowercase letter</p>
+            <p id="digit" class="hint">• Contains a number</p>
+        </div>
+
+        <button type="submit">Change Password</button>
+    </form>
+
+    <!-- Delete Account -->
+    <form action="{{ url_for('auth.delete_account') }}" method="POST"
+          onsubmit="return confirm('Are you sure? This cannot be undone.');" class="account-form danger">
+        <h3>Delete Account</h3>
+        <button type="submit">Delete My Account</button>
+    </form>
+
+</div>
+{% endblock %}

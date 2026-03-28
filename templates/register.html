@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <h2>Create an Account</h2>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        <span class="flash-text">{{ message }}</span>
+                        <button class="flash-close" onclick="closeFlash(this)">✕</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="auth-form">
+        <input type="text" name="username" placeholder="Username" required>
+
+        <input type="email" name="email" placeholder="Email" required>
+
+        <div class="password-wrapper">
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <span class="toggle-password" data-target="password"><i class="bi bi-eye"></i></span>
+        </div>
+        <div class="password-wrapper">
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+            <span class="toggle-password" data-target="confirm_password"><i class="bi bi-eye"></i></span>
+        </div>
+        <div class="password-hints">
+            <p id="len" class="hint">• At least 8 characters</p>
+            <p id="upper" class="hint">• Contains an uppercase letter</p>
+            <p id="lower" class="hint">• Contains a lowercase letter</p>
+            <p id="digit" class="hint">• Contains a number</p>
+        </div>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p class="link">Already have an account? <a href="{{ url_for('auth.login') }}">Sign In</a></p>
+</div>
+{% endblock %}

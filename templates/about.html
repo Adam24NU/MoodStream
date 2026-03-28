@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}About — Moodify{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="about-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>About Moodify</h1>
+        <p>A full-stack Flask app built around mood-driven music discovery.</p>
+    </div>
+</section>
+
+<!-- Feature highlights -->
+<section class="about-features">
+    <h2>What it does</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="bi bi-music-note-list"></i>
+            <h3>Mood-Based Discovery</h3>
+            <p>Select a mood and get five Spotify playlist recommendations pulled live from the Spotify API.</p>
+        </div>
+        <div class="feature-card">
+            <i class="bi bi-bar-chart-fill"></i>
+            <h3>Mood History Dashboard</h3>
+            <p>Every search is logged. Registered users can view a Chart.js dashboard of their mood patterns over time.</p>
+        </div>
+        <div class="feature-card">
+            <i class="bi bi-bookmark-heart-fill"></i>
+            <h3>Personal Playlist Library</h3>
+            <p>Save playlists you like and revisit them from your personal library at any time.</p>
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section class="about-how">
+    <h2>How it works</h2>
+    <div class="how-grid">
+        <div class="how-step">
+            <span class="step-number">01</span>
+            <h3>Pick a mood</h3>
+            <p>Choose from Happy, Sad, Energetic, or Calm on the home page.</p>
+        </div>
+        <div class="how-step">
+            <span class="step-number">02</span>
+            <h3>Spotify API query</h3>
+            <p>Moodify builds a keyword search query and fetches matching playlists using the Spotify Web API's Client Credentials flow.</p>
+        </div>
+        <div class="how-step">
+            <span class="step-number">03</span>
+            <h3>Explore &amp; save</h3>
+            <p>Browse the five results, open any playlist directly in Spotify, and save your favourites with one click.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Tech stack -->
+<section class="about-stack">
+    <h2>Built with</h2>
+    <div class="stack-grid">
+        <span class="stack-tag">Python 3</span>
+        <span class="stack-tag">Flask 3</span>
+        <span class="stack-tag">SQLAlchemy</span>
+        <span class="stack-tag">Flask-Login</span>
+        <span class="stack-tag">Spotipy</span>
+        <span class="stack-tag">Chart.js</span>
+        <span class="stack-tag">SQLite</span>
+        <span class="stack-tag">Vanilla JS</span>
+    </div>
+</section>
+
+{% endblock %}

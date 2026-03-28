@@ -1,0 +1,14 @@
+# PyCharm specific
+.idea/
+
+# Virtual Environment
+.venv/
+
+# Environment variables
+.env
+
+# Cache
+.cache
+
+# Database
+instance

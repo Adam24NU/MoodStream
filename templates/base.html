@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Moodify{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{{ url_for('main.home') }}" class="logo" aria-label="Home">
+                <i class="bi bi-music-note-beamed"></i>
+            </a>
+        </div>
+
+        <div class="navbar-center">
+            <a href="{{ url_for('main.home') }}" class="brand-name">Moodify</a>
+        </div>
+
+        <div class="navbar-right">
+            <a href="{{ url_for('main.home') }}">Home</a>
+            <a href="{{ url_for('main.about') }}">About</a>
+
+            {% if current_user.is_authenticated %}
+                <div class="dropdown">
+                    <button class="dropdown-btn" aria-haspopup="true">
+                        {{ current_user.username }} <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('playlist.my_playlists') }}">My Playlists</a>
+                        <a href="{{ url_for('mood.mood_stats') }}">Mood Stats</a>
+                        <a href="{{ url_for('auth.manage_account') }}">Account</a>
+                        <hr>
+                        <a href="{{ url_for('auth.logout') }}">Sign Out</a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="auth-btn">Sign In</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- GLOBAL FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        <span class="flash-text">{{ message }}</span>
+                        <button class="flash-close" onclick="closeFlash(this)" aria-label="Dismiss">✕</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- PAGE CONTENT -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>© {{ current_year }} Moodify. Built with Flask &amp; Spotify API.</p>
+    </footer>
+
+    <!-- PAGE-SPECIFIC SCRIPTS -->
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="playlist-section">
+    <h2>Saved Playlists</h2>
+
+    {% if playlists %}
+    <div class="playlist-grid">
+        {% for p in playlists %}
+        <div class="playlist-card">
+            {% if p.playlist_image %}
+            <div class="image-container">
+                <img src="{{ p.playlist_image }}" alt="{{ p.playlist_name }}">
+                <button class="save-button saved" data-saved="true"
+                        onclick="toggleSave(this, '{{ p.playlist_name }}', '{{ p.playlist_url }}', '{{ p.playlist_image }}')">
+                    <i class="bi bi-suit-heart-fill"></i>
+                </button>
+            </div>
+            {% endif %}
+            <h3>{{ p.playlist_name }}</h3>
+            <a href="{{ p.playlist_url }}" target="_blank">Open in Spotify</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>You haven’t saved any playlists yet.</p>
+    {% endif %}
+</section>
+{% endblock %}
+
