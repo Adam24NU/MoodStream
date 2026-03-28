@@ -21,6 +21,7 @@ def get_oauth() -> SpotifyOAuth:
         scope="playlist-read-public",
         cache_handler=MemoryCacheHandler(),
         show_dialog=False,
+        open_browser=False,
     )
 
 

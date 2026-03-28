@@ -13,8 +13,15 @@ def spotify_login():
 
 @spotify_auth_bp.route("/callback")
 def callback():
+    # User denied authorization on Spotify's side
+    if request.args.get("error"):
+        return redirect(url_for("main.home"))
+
     code = request.args.get("code")
-    token_info = get_oauth().get_access_token(code, as_dict=True, check_cache=False)
+    if not code:
+        return redirect(url_for("main.home"))
+
+    token_info = get_oauth().get_access_token(code)
     session["spotify_token"] = token_info
     next_url = session.pop("spotify_next", url_for("main.home"))
     return redirect(next_url)
