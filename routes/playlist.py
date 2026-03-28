@@ -15,14 +15,18 @@ playlist_bp = Blueprint("playlist", __name__, url_prefix="/playlist")
 def _get_valid_token():
     """Return a valid Spotify access token from the session, refreshing if expired."""
     token_info = session.get("spotify_token")
+    print(f"[TOKEN] in session: {bool(token_info)}")
     if not token_info:
         return None
-    if is_token_expired(token_info):
+    expired = is_token_expired(token_info)
+    print(f"[TOKEN] expired: {expired}")
+    if expired:
         try:
             token_info = refresh_token(token_info)
             session["spotify_token"] = token_info
             session.modified = True
-        except Exception:
+        except Exception as e:
+            print(f"[TOKEN] refresh failed: {e}")
             session.pop("spotify_token", None)
             return None
     return token_info["access_token"]
