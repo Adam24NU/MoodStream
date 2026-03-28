@@ -5,7 +5,6 @@ import time
 import urllib.parse
 
 import requests
-import spotipy
 
 MOOD_KEYWORDS: dict[str, list[str]] = {
     "happy": ["happy", "joyful", "cheerful", "uplifting", "feel good"],
@@ -103,6 +102,11 @@ def is_token_expired(token_info: dict) -> bool:
 
 
 def search_playlists_by_mood(mood: str, access_token: str, limit: int = 50) -> list[dict]:
+    """
+    Search Spotify for playlists matching the given mood.
+    Raises RuntimeError with the exact Spotify error message on failure
+    so callers can surface it to the user.
+    """
     if mood not in MOOD_QUERIES:
         print(f"[SEARCH] unknown mood: {mood!r}")
         return []
@@ -110,23 +114,34 @@ def search_playlists_by_mood(mood: str, access_token: str, limit: int = 50) -> l
     query = MOOD_QUERIES[mood]
     print(f"[SEARCH] mood={mood!r} query={query!r}")
 
-    try:
-        sp = spotipy.Spotify(auth=access_token)
-        results = sp.search(q=query, type="playlist", limit=limit)
-        raw_items = results["playlists"]["items"]
-        print(f"[SEARCH] Spotify returned {len(raw_items)} raw items")
-    except Exception as e:
-        print(f"[SEARCH] FAILED: {e}")
-        return []
+    resp = requests.get(
+        "https://api.spotify.com/v1/search",
+        params={"q": query, "type": "playlist", "limit": limit},
+        headers={"Authorization": f"Bearer {access_token}"},
+        timeout=10,
+    )
+
+    print(f"[SEARCH] HTTP {resp.status_code}")
+
+    if not resp.ok:
+        try:
+            error_msg = resp.json().get("error", {}).get("message", resp.text)
+        except Exception:
+            error_msg = resp.text
+        print(f"[SEARCH] error: {error_msg}")
+        raise RuntimeError(f"Spotify {resp.status_code}: {error_msg}")
+
+    items = resp.json().get("playlists", {}).get("items", [])
+    print(f"[SEARCH] raw items: {len(items)}")
 
     playlists = [
         {
             "name": item["name"],
             "url": item["external_urls"]["spotify"],
-            "image": item["images"][0]["url"] if item["images"] else None,
+            "image": item["images"][0]["url"] if item.get("images") else None,
         }
-        for item in raw_items
-        if item
+        for item in items
+        if item and item.get("name") and item.get("external_urls", {}).get("spotify")
     ]
 
     random.shuffle(playlists)

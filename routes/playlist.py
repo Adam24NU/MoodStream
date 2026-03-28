@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
 from flask_login import login_required, current_user, AnonymousUserMixin
 
 from extensions import db
@@ -49,7 +49,12 @@ def generate(mood: str):
         db.session.add(log)
         db.session.commit()
 
-    playlists = search_playlists_by_mood(mood, token)
+    try:
+        playlists = search_playlists_by_mood(mood, token)
+    except RuntimeError as e:
+        flash(str(e), "error")
+        playlists = []
+
     return render_template("results.html", mood=mood, playlists=playlists)
 
 
