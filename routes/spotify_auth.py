@@ -1,27 +1,33 @@
 from flask import Blueprint, redirect, request, session, url_for
-from services.spotify_service import get_oauth
+from services.spotify_service import get_auth_url, exchange_code
 
 spotify_auth_bp = Blueprint("spotify_auth", __name__)
 
 
 @spotify_auth_bp.route("/spotify/login")
 def spotify_login():
-    session["spotify_next"] = request.args.get("next", url_for("main.home"))
-    auth_url = get_oauth().get_authorize_url()
-    return redirect(auth_url)
+    # Encode the next URL into the OAuth state param — no session needed
+    next_url = request.args.get("next", url_for("main.home"))
+    return redirect(get_auth_url(state=next_url))
 
 
 @spotify_auth_bp.route("/callback")
 def callback():
-    # User denied authorization on Spotify's side
     if request.args.get("error"):
         return redirect(url_for("main.home"))
 
     code = request.args.get("code")
+    next_url = request.args.get("state") or url_for("main.home")
+
     if not code:
         return redirect(url_for("main.home"))
 
-    token_info = get_oauth().get_access_token(code)
-    session["spotify_token"] = token_info
-    next_url = session.pop("spotify_next", url_for("main.home"))
+    try:
+        token_info = exchange_code(code)
+        session["spotify_token"] = token_info
+        session.modified = True
+    except Exception as e:
+        print(f"[Spotify] Token exchange failed: {e}")
+        return redirect(url_for("main.home"))
+
     return redirect(next_url)

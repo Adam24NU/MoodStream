@@ -4,7 +4,9 @@ from flask_login import login_required, current_user, AnonymousUserMixin
 from extensions import db
 from models.mood_log import MoodLog
 from models.saved_playlist import SavedPlaylist
-from services.spotify_service import search_playlists_by_mood, get_oauth, MOOD_KEYWORDS
+from services.spotify_service import (
+    search_playlists_by_mood, is_token_expired, refresh_token, MOOD_KEYWORDS
+)
 
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/playlist")
@@ -15,10 +17,14 @@ def _get_valid_token():
     token_info = session.get("spotify_token")
     if not token_info:
         return None
-    oauth = get_oauth()
-    if oauth.is_token_expired(token_info):
-        token_info = oauth.refresh_access_token(token_info["refresh_token"])
-        session["spotify_token"] = token_info
+    if is_token_expired(token_info):
+        try:
+            token_info = refresh_token(token_info)
+            session["spotify_token"] = token_info
+            session.modified = True
+        except Exception:
+            session.pop("spotify_token", None)
+            return None
     return token_info["access_token"]
 
 
