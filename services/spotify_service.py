@@ -14,6 +14,16 @@ MOOD_KEYWORDS: dict[str, list[str]] = {
     "energetic": ["energetic", "workout", "hype", "pump up"],
 }
 
+# Simple single-term queries per mood — reliable with Spotify's search API.
+# Complex boolean OR syntax is not officially supported and returns 0 results
+# for most moods.
+MOOD_QUERIES: dict[str, str] = {
+    "happy": "happy upbeat feel good",
+    "sad": "sad emotional melancholy",
+    "calm": "calm relaxing chill ambient",
+    "energetic": "energetic workout pump up hype",
+}
+
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 SCOPE = ""  # public playlist search requires no scope
@@ -86,17 +96,19 @@ def refresh_token(token_info: dict) -> dict:
 
 
 def is_token_expired(token_info: dict) -> bool:
-    return int(time.time()) > token_info.get("expires_at", 0) - 60
+    expires_at = token_info.get("expires_at")
+    if not expires_at:
+        return False  # no expiry info — assume valid rather than deleting token
+    return int(time.time()) > expires_at - 60
 
 
 def search_playlists_by_mood(mood: str, access_token: str, limit: int = 50) -> list[dict]:
-    if mood not in MOOD_KEYWORDS:
+    if mood not in MOOD_QUERIES:
         print(f"[SEARCH] unknown mood: {mood!r}")
         return []
 
-    keywords = MOOD_KEYWORDS[mood]
-    query = "(" + " OR ".join(f'"{k}"' for k in keywords) + ") playlist"
-    print(f"[SEARCH] query={query!r}")
+    query = MOOD_QUERIES[mood]
+    print(f"[SEARCH] mood={mood!r} query={query!r}")
 
     try:
         sp = spotipy.Spotify(auth=access_token)

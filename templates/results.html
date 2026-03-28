@@ -4,6 +4,7 @@
 <section class="playlist-section">
     <h2>Playlists for "{{ mood | capitalize }}" Mood</h2>
 
+    {% if playlists %}
     <div class="playlist-grid">
         {% for p in playlists %}
         <div class="playlist-card">
@@ -23,5 +24,8 @@
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <p class="no-results">No playlists found for this mood. <a href="{{ url_for('main.home') }}">Try another.</a></p>
+    {% endif %}
 </section>
 {% endblock %}
