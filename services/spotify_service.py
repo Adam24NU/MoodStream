@@ -16,7 +16,7 @@ MOOD_KEYWORDS: dict[str, list[str]] = {
 
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
-SCOPE = "playlist-read-public"
+SCOPE = ""  # public playlist search requires no scope
 
 
 def _credentials_header() -> str:
@@ -30,7 +30,6 @@ def get_auth_url(state: str = "") -> str:
         "client_id": os.environ.get("SPOTIFY_CLIENT_ID", ""),
         "response_type": "code",
         "redirect_uri": os.environ.get("SPOTIFY_REDIRECT_URI", "http://127.0.0.1:5000/callback"),
-        "scope": SCOPE,
         "state": state,
     }
     return SPOTIFY_AUTH_URL + "?" + urllib.parse.urlencode(params)
