@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user, AnonymousUserMixin
 
-from app import db
+from extensions import db
 from models.mood_log import MoodLog
 from models.saved_playlist import SavedPlaylist
 from services.spotify_service import search_playlists_by_mood, MOOD_KEYWORDS

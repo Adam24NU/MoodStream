@@ -3,13 +3,10 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+
+from extensions import db, login_manager
 
 load_dotenv()
-
-db = SQLAlchemy()
-login_manager = LoginManager()
 
 
 def create_app():
