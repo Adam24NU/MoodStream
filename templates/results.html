@@ -4,6 +4,13 @@
 <section class="playlist-section">
     <h2>Playlists for "{{ mood | capitalize }}" Mood</h2>
 
+    {% if demo_mode %}
+    <p class="demo-notice">
+        <i class="bi bi-info-circle"></i>
+        These are curated demo playlists. Each link opens a live Spotify search so you can explore the real thing.
+    </p>
+    {% endif %}
+
     {% if playlists %}
     <div class="playlist-grid">
         {% for p in playlists %}
@@ -20,7 +27,9 @@
             </div>
             {% endif %}
             <h3>{{ p.name }}</h3>
-            <a href="{{ p.url }}" target="_blank">Open in Spotify</a>
+            <a href="{{ p.url }}" target="_blank">
+                Search on Spotify <i class="bi bi-box-arrow-up-right"></i>
+            </a>
         </div>
         {% endfor %}
     </div>

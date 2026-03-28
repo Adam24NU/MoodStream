@@ -559,6 +559,19 @@ main {
     text-decoration: underline;
 }
 
+.demo-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f0f4ff;
+    border: 1px solid #c7d2fe;
+    color: #4338ca;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    margin-bottom: 28px;
+}
+
 /* Playlist Image */
 .image-container {
     position: relative;

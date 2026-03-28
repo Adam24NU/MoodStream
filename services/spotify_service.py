@@ -6,6 +6,11 @@ import urllib.parse
 
 import requests
 
+# ---------------------------------------------------------------------------
+# Demo mode — set DEMO_MODE=false in your environment to use the live API.
+# ---------------------------------------------------------------------------
+DEMO_MODE: bool = os.environ.get("DEMO_MODE", "true").lower() != "false"
+
 MOOD_KEYWORDS: dict[str, list[str]] = {
     "happy": ["happy", "joyful", "cheerful", "uplifting", "feel good"],
     "sad": ["sad", "melancholy", "blue", "emotional"],
@@ -148,3 +153,19 @@ def search_playlists_by_mood(mood: str, access_token: str, limit: int = 50) -> l
     result = playlists[:5]
     print(f"[SEARCH] returning {len(result)} playlists")
     return result
+
+
+def get_playlists_for_mood(mood: str, access_token: str | None = None) -> list[dict]:
+    """
+    Return playlists for *mood*.
+
+    In DEMO_MODE (default) returns local placeholder data — no Spotify
+    credentials required.  With DEMO_MODE=false and a valid *access_token*
+    the live Spotify search API is used instead.
+    """
+    if DEMO_MODE:
+        from services.demo_data import DEMO_PLAYLISTS
+        playlists = list(DEMO_PLAYLISTS.get(mood, []))
+        random.shuffle(playlists)
+        return playlists
+    return search_playlists_by_mood(mood, access_token)  # type: ignore[arg-type]
