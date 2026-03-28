@@ -11,4 +11,13 @@
 .cache
 
 # Database
-instance
+instance/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS metadata
+._*
+.DS_Store
