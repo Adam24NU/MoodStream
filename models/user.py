@@ -1,4 +1,4 @@
-from app import db, login_manager
+from app import db
 from flask_login import UserMixin
 
 
@@ -10,8 +10,3 @@ class User(db.Model, UserMixin):
 
     saved_playlists = db.relationship("SavedPlaylist", backref="user", cascade="all, delete-orphan")
     mood_logs = db.relationship("MoodLog", backref="user", cascade="all, delete-orphan")
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return db.session.get(User, int(user_id))

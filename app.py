@@ -29,6 +29,12 @@ def create_app():
     login_manager.login_message = "Please sign in to access that page."
     login_manager.login_message_category = "message"
 
+    from models.user import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return db.session.get(User, int(user_id))
+
     from routes.auth import auth_bp
     from routes.main import main_bp
     from routes.mood import mood_bp
