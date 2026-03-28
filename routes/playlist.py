@@ -1,13 +1,25 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
 from flask_login import login_required, current_user, AnonymousUserMixin
 
 from extensions import db
 from models.mood_log import MoodLog
 from models.saved_playlist import SavedPlaylist
-from services.spotify_service import search_playlists_by_mood, MOOD_KEYWORDS
+from services.spotify_service import search_playlists_by_mood, get_oauth, MOOD_KEYWORDS
 
 
 playlist_bp = Blueprint("playlist", __name__, url_prefix="/playlist")
+
+
+def _get_valid_token():
+    """Return a valid Spotify access token from the session, refreshing if expired."""
+    token_info = session.get("spotify_token")
+    if not token_info:
+        return None
+    oauth = get_oauth()
+    if oauth.is_token_expired(token_info):
+        token_info = oauth.refresh_access_token(token_info["refresh_token"])
+        session["spotify_token"] = token_info
+    return token_info["access_token"]
 
 
 @playlist_bp.route("/generate/<mood>")
@@ -15,15 +27,19 @@ def generate(mood: str):
     """
     Handle playlist recommendations for the given mood.
 
-    :param mood: Mood chosen be the user.
+    :param mood: Mood chosen by the user.
     :return: Rendered results.html page.
     """
+    token = _get_valid_token()
+    if token is None:
+        return redirect(url_for("spotify_auth.spotify_login", next=request.url))
+
     if mood in MOOD_KEYWORDS and not isinstance(current_user, AnonymousUserMixin):
         log = MoodLog(user_id=current_user.id, mood=mood)
         db.session.add(log)
         db.session.commit()
 
-    playlists = search_playlists_by_mood(mood)
+    playlists = search_playlists_by_mood(mood, token)
     return render_template("results.html", mood=mood, playlists=playlists)
 
 

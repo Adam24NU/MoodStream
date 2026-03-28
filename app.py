@@ -36,11 +36,13 @@ def create_app():
     from routes.main import main_bp
     from routes.mood import mood_bp
     from routes.playlist import playlist_bp
+    from routes.spotify_auth import spotify_auth_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(mood_bp)
     app.register_blueprint(playlist_bp)
+    app.register_blueprint(spotify_auth_bp)
 
     @app.context_processor
     def inject_globals():

@@ -2,7 +2,8 @@ import os
 import random
 
 import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth
+from spotipy.cache_handler import MemoryCacheHandler
 
 MOOD_KEYWORDS: dict[str, list[str]] = {
     "happy": ["happy", "joyful", "cheerful", "uplifting", "feel good"],
@@ -11,31 +12,21 @@ MOOD_KEYWORDS: dict[str, list[str]] = {
     "energetic": ["energetic", "workout", "hype", "pump up"],
 }
 
-# Initialised on first use so that missing credentials do not crash app startup.
-_client: spotipy.Spotify | None = None
+
+def get_oauth() -> SpotifyOAuth:
+    return SpotifyOAuth(
+        client_id=os.environ.get("SPOTIFY_CLIENT_ID"),
+        client_secret=os.environ.get("SPOTIFY_CLIENT_SECRET"),
+        redirect_uri=os.environ.get("SPOTIFY_REDIRECT_URI", "http://127.0.0.1:5000/callback"),
+        scope="playlist-read-public",
+        cache_handler=MemoryCacheHandler(),
+        show_dialog=False,
+    )
 
 
-def _get_client() -> spotipy.Spotify:
-    global _client
-    if _client is None:
-        client_id = os.environ.get("SPOTIFY_CLIENT_ID")
-        client_secret = os.environ.get("SPOTIFY_CLIENT_SECRET")
-        if not client_id or not client_secret:
-            raise RuntimeError(
-                "SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET must be set in the environment."
-            )
-        _client = spotipy.Spotify(
-            client_credentials_manager=SpotifyClientCredentials(
-                client_id=client_id,
-                client_secret=client_secret,
-            )
-        )
-    return _client
-
-
-def search_playlists_by_mood(mood: str, limit: int = 50) -> list[dict]:
+def search_playlists_by_mood(mood: str, access_token: str, limit: int = 50) -> list[dict]:
     """
-    Search Spotify for playlists matching the given mood.
+    Search Spotify for playlists matching the given mood using a user access token.
 
     Returns up to 5 randomly selected results, or an empty list if the mood
     is unrecognised or the Spotify request fails.
@@ -47,7 +38,8 @@ def search_playlists_by_mood(mood: str, limit: int = 50) -> list[dict]:
     query = "(" + " OR ".join(f'"{k}"' for k in keywords) + ") playlist"
 
     try:
-        results = _get_client().search(q=query, type="playlist", limit=limit)
+        sp = spotipy.Spotify(auth=access_token)
+        results = sp.search(q=query, type="playlist", limit=limit)
     except Exception:
         return []
 
